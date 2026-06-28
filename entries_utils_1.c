@@ -26,15 +26,12 @@ char	*lookup(char *k, t_entry *entries, ssize_t n_entries)
 	return (NULL);
 }
 
-t_entry	*file_to_array(char *file)
+t_entry	*dict_to_array(char *dict)
 {
-	char	*dict;
 	t_entry	*entries;
 
-	dict = read_dict(file);
 	entries = make_entries_array(dict);
 	entries = parse_dict(dict, entries);
-	free(dict);
 	return (entries);
 }
 

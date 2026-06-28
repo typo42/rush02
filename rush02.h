@@ -6,7 +6,7 @@
 /*   By: giarovoi <8361011@gmail.com>              #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
 /*   Created: 2026/06/27 12:47:42 by giarovoi         #+#    #+#              */
-/*   Updated: 2026/06/28 12:35:54 by giarovoi        ###   ########.fr        */
+/*   Updated: 2026/06/28 16:47:39 by giarovoi        ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include <fcntl.h>
 # include <unistd.h>
-# include <stdio.h>
 # include <stdlib.h>
 
 # define BUFFER_SIZE 128
@@ -30,6 +29,7 @@ typedef struct s_entry
 
 int			arg_valid(char *arg);
 void		free_dict(t_entry *entries, ssize_t n);
+int			get_longest_key_len(t_entry *entries, ssize_t n_entries);
 int			run_conversion(char *file, char *number);
 char		*format(char *input);
 int			ft_strcmp(char *s1, char *s2);
@@ -59,7 +59,7 @@ int			get_key_len(char *dict);
 int			get_value_len(char *dict);
 char		*copy_key(char *pos, int key_len);
 char		*copy_value(char *pos, int value_len);
-t_entry		*file_to_array(char *file);
+t_entry		*dict_to_array(char *dict);
 char		*make_word(char first, char second, int len);
 char		*make_triplet(char *number);
 char		*lookup(char *k, t_entry *entries, ssize_t n_entries);

@@ -73,7 +73,7 @@ int	magic(char *number, t_entry *entries, ssize_t n_entries)
 	int		triplet_nz;
 
 	len = ft_strlen(number);
-	if (len > ft_strlen(entries[n_entries - 1].key) + 2)
+	if (len > get_longest_key_len(entries, n_entries) + 2)
 	{
 		ft_putstr(ERROR);
 		return (-1);

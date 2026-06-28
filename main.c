@@ -56,13 +56,16 @@ int	arg_valid(char *arg)
 int	run_conversion(char *file, char *number)
 {
 	char	*dict_str;
+	char	*formatted;
 	ssize_t	n_entries;
 	t_entry	*entries;
 
 	dict_str = read_dict(file);
+	if (dict_str == NULL)
+		return (-1);
 	n_entries = count_entries(dict_str);
+	entries = dict_to_array(dict_str);
 	free(dict_str);
-	entries = file_to_array(file);
 	if (number[0] == '0' && number[1] == '\0')
 	{
 		ft_putstr(lookup("0", entries, n_entries));
@@ -70,23 +73,11 @@ int	run_conversion(char *file, char *number)
 	}
 	else
 	{
-		if (magic(format(number), entries, n_entries) == 0)
+		formatted = format(number);
+		if (magic(formatted, entries, n_entries) == 0)
 			write(1, "\n", 1);
+		free(formatted);
 	}
 	free_dict(entries, n_entries);
 	return (0);
-}
-
-void	free_dict(t_entry *entries, ssize_t n)
-{
-	ssize_t	i;
-
-	i = 0;
-	while (i < n)
-	{
-		free(entries[i].key);
-		free(entries[i].value);
-		i++;
-	}
-	free(entries);
 }

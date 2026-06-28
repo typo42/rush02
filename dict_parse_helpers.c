@@ -51,18 +51,21 @@ int	get_key_len(char *dict)
 int	get_value_len(char *dict)
 {
 	int	value_len;
+	int	last_non_space;
 
 	value_len = 0;
+	last_non_space = 0;
 	while (*dict >= '0' && *dict <= '9')
 		dict++;
 	while (*dict == ':' || *dict == ' ')
 		dict++;
-	while (*dict != '\n' && *dict != '\0')
+	while (dict[value_len] != '\n' && dict[value_len] != '\0')
 	{
+		if (dict[value_len] != ' ')
+			last_non_space = value_len + 1;
 		value_len++;
-		dict++;
 	}
-	return (value_len);
+	return (last_non_space);
 }
 
 char	*copy_key(char *pos, int key_len)
@@ -93,7 +96,7 @@ char	*copy_value(char *pos, int value_len)
 	while (*pos == ':' || *pos == ' ')
 		pos++;
 	i = 0;
-	while (*pos != '\n' && *pos != '\0')
+	while (i < value_len)
 	{
 		value[i] = *pos;
 		i++;

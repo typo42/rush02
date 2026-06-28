@@ -85,6 +85,8 @@ char	*read_dict(char *file)
 	ssize_t	bytes_read;
 
 	dict_size = get_dict_size(file);
+	if (dict_size == -1)
+		return (NULL);
 	dict = malloc(dict_size + 1);
 	if (dict == NULL)
 		return (NULL);
