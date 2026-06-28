@@ -3,10 +3,10 @@
 /*                                                       :::      ::::::::    */
 /*   main.c                                            :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
-/*   By: fqussay <fqussay@student.42abudhabi.ae>   #+#  +:+       +#+         */
+/*   By: giarovoi <8361011@gmail.com>              #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/06/27 13:27:18 by fqussay          #+#    #+#              */
-/*   Updated: 2026/06/28 00:26:16 by fqussay         ###   ########.fr        */
+/*   Created: 2026/06/27 13:27:18 by giarovoi         #+#    #+#              */
+/*   Updated: 2026/06/28 11:49:03 by giarovoi        ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ int	main(int argc, char **argv)
 {
 	char	*file;
 	char	*number;
-	char	*dict_str;
 	ssize_t	n_entries;
 	t_entry	*entries;
 
@@ -39,31 +38,31 @@ int	main(int argc, char **argv)
 		ft_putstr(ERROR);
 		return (0);
 	}
-	if (argc == 2)
-	{
-		file = "numbers.dict";
-		number = argv[1];
-	}
-	if (argc == 3)
-	{
-		file = argv[1];
-		number = argv[2];
-	}
+	set_input(argc, argv, &file, &number);
 	if (!arg_valid(number))
 	{
 		ft_putstr(ERROR);
 		return (0);
 	}
-	dict_str = read_dict(file);
-	n_entries = count_entries(dict_str);
-	free(dict_str);
-	entries = file_to_array(file);
-	if (number[0] == '0' && number[1] == '\0')
+	if (load_dict(file, &entries, &n_entries) == -1)
+		return (0);
+	if (print_number(number, entries, n_entries) == 0)
+		write(1, "\n", 1);
+	free_dict(entries, n_entries);
+	return (0);
+}
+
+int	arg_valid(char *arg)
+{
+	if (!arg || *arg == '\0')
+		return (0);
+	if (*arg == '0' && *(arg + 1) != '\0')
+		return (0);
+	while (*arg)
 	{
-		ft_putstr(lookup("0", entries, n_entries));
-		write(1, "\n", 1);
-		free_dict(entries, n_entries);
+		if (*arg < '0' || *arg > '9')
+			return (0);
+		arg++;
 	}
-	else if (magic(format(number), file_to_array(file), n_entries) == 0)
-		write(1, "\n", 1);
+	return (1);
 }

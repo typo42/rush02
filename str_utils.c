@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   67.c                                              :+:      :+:    :+:    */
+/*   str_utils.c                                       :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
-/*   By: fqussay <fqussay@student.42abudhabi.ae>   #+#  +:+       +#+         */
+/*   By: giarovoi <8361011@gmail.com>              #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/06/27 12:49:32 by fqussay          #+#    #+#              */
-/*   Updated: 2026/06/28 00:14:23 by fqussay         ###   ########.fr        */
+/*   Created: 2026/06/27 13:56:43 by giarovoi         #+#    #+#              */
+/*   Updated: 2026/06/28 11:49:08 by giarovoi        ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,42 +33,48 @@ char	*format(char *input)
 	return (formatted);
 }
 
-char	*lookup(char *k, t_entry *entries, ssize_t size)
+int	ft_strcmp(char *s1, char *s2)
 {
 	int	i;
 
 	i = 0;
-	while (i < size)
+	while (s1[i] == s2[i] && s1[i] != '\0')
 	{
-		if (ft_strcmp(entries[i].key, k) == 0)
-			return (entries[i].value);
 		i++;
 	}
-	return (NULL);
+	return (s1[i] - s2[i]);
 }
 
-t_entry	*file_to_array(char *file)
+int	ft_strlen(char *str)
 {
-	char	*dict;
-	t_entry	*entries;
+	int	i;
 
-	dict = read_dict(file);
-	entries = make_entries_array(dict);
-	entries = parse_dict(dict, entries);
-	free(dict);
-	return (entries);
-}
-
-int	put_word(char *s, t_entry *entries, ssize_t size)
-{
-	char	*word;
-
-	word = lookup(s, entries, size);
-	if (word == NULL)
+	i = 0;
+	while (str[i] != '\0')
 	{
-		ft_putstr(DICT_ERROR);
-		return (-1);
+		i++;
 	}
-	ft_putstr(word);
-	return (0);
+	return (i);
+}
+
+void	ft_putstr(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		write(1, &(str[i]), 1);
+		i++;
+	}
+}
+
+char	*make_string(int size)
+{
+	char	*string;
+
+	string = malloc(size + 1);
+	if (string == NULL)
+		return (NULL);
+	return (string);
 }
