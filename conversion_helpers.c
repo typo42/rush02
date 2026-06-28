@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   conversion_utils.c                                :+:      :+:    :+:    */
+/*   conversion_helpers.c                              :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: giarovoi <8361011@gmail.com>              #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
@@ -12,78 +12,71 @@
 
 #include "rush02.h"
 
-int	convert_full_tens(char *s, char *c, t_entry *entries, ssize_t size)
+int	free_and_put(char *c, char *s, t_entry *entries, ssize_t size)
+{
+	free(c);
+	return (put_word(s, entries, size));
+}
+
+int	finish_tens(char *s, char *c, t_entry *entries, ssize_t size)
 {
 	char	*word;
 	int		ret;
 
 	word = make_word(s[0], '0', 2);
-	if (word == NULL)
-		return (-1);
-	ret = put_word(word, entries, size);
+	put_word(word, entries, size);
 	free(word);
-	if (ret == -1)
-		return (-1);
-	if (s[1] == '0')
-		return (0);
-	write(1, " ", 1);
-	return (convert_ones(c, entries, size));
+	if (s[1] != '0')
+	{
+		write(1, " ", 1);
+		ret = convert_ones(c, entries, size);
+		return (ret);
+	}
+	return (0);
 }
 
-int	print_hundred_prefix(char *s, t_entry *entries, ssize_t size)
+int	print_hundred_word(char *s, char *c, t_entry *entries, ssize_t size)
 {
-	char	*c;
 	char	*word;
-	int		ret;
 
-	c = make_word(s[0], '\0', 1);
-	if (c == NULL)
-		return (-1);
-	ret = convert_ones(c, entries, size);
-	free(c);
-	if (ret == -1)
-		return (-1);
+	convert_ones(c, entries, size);
 	word = lookup("100", entries, size);
-	if (word == NULL)
+	if (!word)
 	{
 		ft_putstr(DICT_ERROR);
+		free(c);
 		return (-1);
 	}
 	write(1, " ", 1);
-	ft_putstr(word);
+	write(1, word, ft_strlen(word));
 	if (s[1] != '0' || s[2] != '0')
 		write(1, " ", 1);
 	return (0);
 }
 
-int	has_nonzero(char *s)
+int	has_remaining_digits(char *start)
 {
 	int	i;
 
 	i = 0;
-	while (s[i])
+	while (start[i])
 	{
-		if (s[i] != '0')
+		if (start[i] != '0')
 			return (1);
 		i++;
 	}
 	return (0);
 }
 
-char	*next_group(char *number)
+void	print_scale_word(int len, int remaining_nz,
+		t_entry *entries, ssize_t size)
 {
-	char	*rest;
-	int		i;
+	char	*k;
 
-	rest = malloc(ft_strlen(number) - 2);
-	if (rest == NULL)
-		return (NULL);
-	i = 3;
-	while (number[i])
-	{
-		rest[i - 3] = number[i];
-		i++;
-	}
-	rest[i - 3] = '\0';
-	return (rest);
+	write(1, " ", 1);
+	k = make_key(len);
+	put_word(k, entries, size);
+	free(k);
+	if (remaining_nz)
+		write(1, " ", 1);
 }

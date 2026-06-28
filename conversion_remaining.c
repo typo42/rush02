@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   dict_helpers.c                                    :+:      :+:    :+:    */
+/*   conversion_remaining.c                            :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: giarovoi <8361011@gmail.com>              #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
@@ -12,45 +12,35 @@
 
 #include "rush02.h"
 
-int	open_dict_file(char *file)
+char	*copy_remaining_number(char *number, int len)
 {
-	int	fd;
+	char	*new;
+	char	*start;
+	int		i;
 
-	fd = open(file, O_RDONLY);
-	if (fd == -1)
-		ft_putstr(DICT_ERROR);
-	return (fd);
+	new = malloc(len - 2);
+	start = new;
+	i = 3;
+	while (number[i])
+		*new++ = number[i++];
+	*new = '\0';
+	return (start);
 }
 
-ssize_t	dict_error(int fd)
+int	convert_remaining(char *number, int triplet_nz,
+		t_entry *entries, ssize_t size)
 {
-	ft_putstr(DICT_ERROR);
-	if (fd != -1)
-		close(fd);
-	return (-1);
-}
+	char	*start;
+	int		len;
+	int		remaining_nz;
 
-char	*free_read_dict(char *dict, int fd)
-{
-	free(dict);
-	dict_error(fd);
-	return (NULL);
-}
-
-char	*next_line(char *line)
-{
-	while (*line && *line != '\n')
-		line++;
-	if (*line == '\n')
-		line++;
-	return (line);
-}
-
-t_entry	make_entry(char *line)
-{
-	t_entry	entry;
-
-	entry.key = copy_key(line);
-	entry.value = copy_value(line);
-	return (entry);
+	len = ft_strlen(number);
+	start = copy_remaining_number(number, len);
+	remaining_nz = has_remaining_digits(start);
+	if (triplet_nz)
+		print_scale_word(len, remaining_nz, entries, size);
+	if (remaining_nz)
+		magic(start, entries, size);
+	free(start);
+	return (0);
 }

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                       :::      ::::::::    */
-/*   dict_copy.c                                       :+:      :+:    :+:    */
+/*   dict_entry_helpers.c                              :+:      :+:    :+:    */
 /*                                                   +:+ +:+         +:+      */
 /*   By: giarovoi <8361011@gmail.com>              #+#  +:+       +#+         */
 /*                                               +#+#+#+#+#+   +#+            */
@@ -12,71 +12,50 @@
 
 #include "rush02.h"
 
-int	key_size(char *line)
-{
-	int	i;
-
-	i = 0;
-	while (line[i] >= '0' && line[i] <= '9')
-		i++;
-	return (i);
-}
-
-char	*value_start(char *line)
-{
-	while (*line >= '0' && *line <= '9')
-		line++;
-	while (*line == ':' || *line == ' ')
-		line++;
-	return (line);
-}
-
-int	value_size(char *line)
-{
-	char	*value;
-	int		i;
-
-	value = value_start(line);
-	i = 0;
-	while (value[i] != '\n' && value[i] != '\0' && value[i] != '\r')
-		i++;
-	return (i);
-}
-
-char	*copy_key(char *line)
+char	*copy_key(char *pos, int key_len)
 {
 	char	*key;
 	int		i;
 
-	key = make_string(key_size(line));
-	if (key == NULL)
-		return (NULL);
+	key = make_string(key_len);
 	i = 0;
-	while (line[i] >= '0' && line[i] <= '9')
+	while (*pos >= '0' && *pos <= '9')
 	{
-		key[i] = line[i];
+		key[i] = *pos;
 		i++;
+		pos++;
 	}
 	key[i] = '\0';
 	return (key);
 }
 
-char	*copy_value(char *line)
+char	*copy_value(char *pos, int value_len)
 {
 	char	*value;
-	char	*pos;
 	int		i;
 
-	pos = value_start(line);
-	value = make_string(value_size(line));
-	if (value == NULL)
-		return (NULL);
+	value = make_string(value_len);
+	pos = skip_to_value(pos);
 	i = 0;
-	while (pos[i] != '\n' && pos[i] != '\0' && pos[i] != '\r')
+	while (*pos != '\n' && *pos != '\0' && *pos != '\r')
 	{
-		value[i] = pos[i];
+		value[i] = *pos;
 		i++;
+		pos++;
 	}
 	value[i] = '\0';
 	return (value);
+}
+
+t_entry	parse_entry(char *dict)
+{
+	t_entry	entry;
+	int		key_len;
+	int		value_len;
+
+	key_len = get_key_len(dict);
+	value_len = get_value_len(dict);
+	entry.key = copy_key(dict, key_len);
+	entry.value = copy_value(dict, value_len);
+	return (entry);
 }

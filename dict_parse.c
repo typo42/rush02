@@ -14,25 +14,15 @@
 
 ssize_t	get_dict_size(char *file)
 {
-	int		numbers;
-	char	buffer[BUFFER_SIZE];
-	ssize_t	dict_size;
-	ssize_t	bytes_read;
+	int	numbers;
 
-	numbers = open_dict_file(file);
+	numbers = open(file, O_RDONLY);
 	if (numbers == -1)
-		return (-1);
-	dict_size = 0;
-	bytes_read = read(numbers, buffer, BUFFER_SIZE);
-	while (bytes_read > 0)
 	{
-		dict_size += bytes_read;
-		bytes_read = read(numbers, buffer, BUFFER_SIZE);
+		ft_putstr(DICT_ERROR);
+		return (-1);
 	}
-	if (bytes_read == -1)
-		return (dict_error(numbers));
-	close(numbers);
-	return (dict_size);
+	return (read_dict_size(numbers));
 }
 
 int	count_entries(char *dict)
@@ -51,19 +41,22 @@ int	count_entries(char *dict)
 
 t_entry	*parse_dict(char *dict, t_entry *entries)
 {
-	int	k;
-	int	size;
+	t_entry	entry;
+	int		k;
+	int		size;
 
 	size = count_entries(dict);
 	k = 0;
-	while (k < size && *dict != '\0')
+	while (k < size)
 	{
-		if (*dict != '\n')
+		while (*dict != '\n' && *dict != '\0')
 		{
-			entries[k] = make_entry(dict);
+			entry = parse_entry(dict);
+			entries[k] = entry;
+			dict = skip_to_line_end(dict);
 			k++;
 		}
-		dict = next_line(dict);
+		dict++;
 	}
 	return (entries);
 }
@@ -85,19 +78,21 @@ char	*read_dict(char *file)
 	int		numbers;
 	char	*dict;
 	ssize_t	dict_size;
+	ssize_t	bytes_read;
 
 	dict_size = get_dict_size(file);
-	if (dict_size < 0)
-		return (NULL);
 	dict = malloc(dict_size + 1);
 	if (dict == NULL)
 		return (NULL);
-	numbers = open_dict_file(file);
-	if (numbers == -1)
-		return (free_read_dict(dict, numbers));
-	if (read(numbers, dict, dict_size) == -1)
-		return (free_read_dict(dict, numbers));
 	dict[dict_size] = '\0';
+	numbers = open(file, O_RDONLY);
+	bytes_read = read(numbers, dict, dict_size);
+	if (bytes_read == -1)
+	{
+		ft_putstr(DICT_ERROR);
+		close(numbers);
+		return (NULL);
+	}
 	close(numbers);
 	return (dict);
 }

@@ -12,52 +12,52 @@
 
 #include "rush02.h"
 
-void	set_input(int argc, char **argv, char **file, char **number)
+void	set_file_and_number(int argc, char **argv, char **file, char **number)
 {
 	if (argc == 2)
 	{
 		*file = "numbers.dict";
 		*number = argv[1];
-		return ;
 	}
-	*file = argv[1];
-	*number = argv[2];
+	if (argc == 3)
+	{
+		*file = argv[1];
+		*number = argv[2];
+	}
 }
 
-int	load_dict(char *file, t_entry **entries, ssize_t *n_entries)
+int	print_zero(t_entry *entries, ssize_t n_entries)
 {
-	char	*dict_str;
-
-	dict_str = read_dict(file);
-	if (dict_str == NULL)
-		return (-1);
-	*n_entries = count_entries(dict_str);
-	*entries = make_entries_array(dict_str);
-	if (*entries == NULL)
-	{
-		free(dict_str);
-		return (-1);
-	}
-	parse_dict(dict_str, *entries);
-	free(dict_str);
+	ft_putstr(lookup("0", entries, n_entries));
+	write(1, "\n", 1);
+	free_dict(entries, n_entries);
 	return (0);
 }
 
-int	print_number(char *number, t_entry *entries, ssize_t n_entries)
+int	print_nonzero(char *file, char *number, ssize_t n_entries)
 {
-	char	*formatted;
-	int		ret;
+	if (magic(format(number), file_to_array(file), n_entries) == 0)
+		write(1, "\n", 1);
+	return (0);
+}
 
-	if (number[0] == '0' && number[1] == '\0')
+int	run_conversion(char *file, char *number)
+{
+	char	*dict_str;
+	ssize_t	n_entries;
+	t_entry	*entries;
+
+	if (!arg_valid(number))
 	{
-		ft_putstr(lookup("0", entries, n_entries));
+		ft_putstr(ERROR);
 		return (0);
 	}
-	formatted = format(number);
-	if (formatted == NULL)
-		return (-1);
-	ret = magic(formatted, entries, n_entries);
-	if (formatted != number)
-		free(formatted);
-	return (ret);
+	dict_str = read_dict(file);
+	n_entries = count_entries(dict_str);
+	free(dict_str);
+	entries = file_to_array(file);
+	if (number[0] == '0' && number[1] == '\0')
+		return (print_zero(entries, n_entries));
+	print_nonzero(file, number, n_entries);
+	return (0);
 }
