@@ -48,22 +48,16 @@ int	get_key_len(char *dict)
 	return (key_len);
 }
 
-char	*skip_to_value(char *dict)
-{
-	while (*dict >= '0' && *dict <= '9')
-		dict++;
-	while (*dict == ':' || *dict == ' ')
-		dict++;
-	return (dict);
-}
-
 int	get_value_len(char *dict)
 {
 	int	value_len;
 
 	value_len = 0;
-	dict = skip_to_value(dict);
-	while (*dict != '\n' && *dict != '\0' && *dict != '\r')
+	while (*dict >= '0' && *dict <= '9')
+		dict++;
+	while (*dict == ':' || *dict == ' ')
+		dict++;
+	while (*dict != '\n' && *dict != '\0')
 	{
 		value_len++;
 		dict++;
@@ -71,9 +65,40 @@ int	get_value_len(char *dict)
 	return (value_len);
 }
 
-char	*skip_to_line_end(char *dict)
+char	*copy_key(char *pos, int key_len)
 {
-	while (*dict != '\n' && *dict != '\0')
-		dict++;
-	return (dict);
+	char	*key;
+	int		i;
+
+	key = make_string(key_len);
+	i = 0;
+	while (*pos >= '0' && *pos <= '9')
+	{
+		key[i] = *pos;
+		i++;
+		pos++;
+	}
+	key[i] = '\0';
+	return (key);
+}
+
+char	*copy_value(char *pos, int value_len)
+{
+	char	*value;
+	int		i;
+
+	value = make_string(value_len);
+	while (*pos >= '0' && *pos <= '9')
+		pos++;
+	while (*pos == ':' || *pos == ' ')
+		pos++;
+	i = 0;
+	while (*pos != '\n' && *pos != '\0')
+	{
+		value[i] = *pos;
+		i++;
+		pos++;
+	}
+	value[i] = '\0';
+	return (value);
 }

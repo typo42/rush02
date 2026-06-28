@@ -41,19 +41,23 @@ int	count_entries(char *dict)
 
 t_entry	*parse_dict(char *dict, t_entry *entries)
 {
-	t_entry	entry;
 	int		k;
-	int		size;
+	int		n_entries;
+	int		key_len;
+	int		value_len;
 
-	size = count_entries(dict);
+	n_entries = count_entries(dict);
 	k = 0;
-	while (k < size)
+	while (k < n_entries)
 	{
 		while (*dict != '\n' && *dict != '\0')
 		{
-			entry = parse_entry(dict);
-			entries[k] = entry;
-			dict = skip_to_line_end(dict);
+			key_len = get_key_len(dict);
+			value_len = get_value_len(dict);
+			entries[k].key = copy_key(dict, key_len);
+			entries[k].value = copy_value(dict, value_len);
+			while (*dict != '\n' && *dict != '\0')
+				dict++;
 			k++;
 		}
 		dict++;

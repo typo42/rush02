@@ -12,12 +12,12 @@
 
 #include "rush02.h"
 
-char	*lookup(char *k, t_entry *entries, ssize_t size)
+char	*lookup(char *k, t_entry *entries, ssize_t n_entries)
 {
 	int	i;
 
 	i = 0;
-	while (i < size)
+	while (i < n_entries)
 	{
 		if (ft_strcmp(entries[i].key, k) == 0)
 			return (entries[i].value);
@@ -38,11 +38,11 @@ t_entry	*file_to_array(char *file)
 	return (entries);
 }
 
-int	put_word(char *s, t_entry *entries, ssize_t size)
+int	put_word(char *s, t_entry *entries, ssize_t n_entries)
 {
 	char	*word;
 
-	word = lookup(s, entries, size);
+	word = lookup(s, entries, n_entries);
 	if (word == NULL)
 	{
 		ft_putstr(DICT_ERROR);

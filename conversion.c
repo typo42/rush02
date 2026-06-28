@@ -12,40 +12,41 @@
 
 #include "rush02.h"
 
-int	convert_ones(char *s, t_entry *entries, ssize_t size)
+int	convert_ones(char *s, t_entry *entries, ssize_t n_entries)
 {
 	if (s[1] != '\0')
 		return (0);
 	if (s[0] == '0')
 		return (0);
-	return (put_word(s, entries, size));
+	return (put_word(s, entries, n_entries));
 }
 
-int	convert_tens(char *s, t_entry *entries, ssize_t size)
+int	convert_tens(char *s, t_entry *entries, ssize_t n_entries)
 {
-	char	*c;
+	char	c[2];
+	char	*word;
 	int		ret;
 
-	c = make_word(s[1], '\0', 1);
+	c[0] = s[1];
+	c[1] = '\0';
 	if (s[2] != '\0')
-	{
-		free(c);
 		return (0);
-	}
 	if (s[0] == '0')
-	{
-		ret = convert_ones(c, entries, size);
-		free(c);
-		return (ret);
-	}
+		return (convert_ones(c, entries, n_entries));
 	if (s[0] == '1')
-		return (free_and_put(c, s, entries, size));
-	ret = finish_tens(s, c, entries, size);
-	free(c);
+		return (put_word(s, entries, n_entries));
+	word = make_word(s[0], '0', 2);
+	ret = put_word(word, entries, n_entries);
+	free(word);
+	if (s[1] != '0')
+	{
+		write(1, " ", 1);
+		ret = convert_ones(c, entries, n_entries);
+	}
 	return (ret);
 }
 
-int	convert_hundreds(char *s, t_entry *entries, ssize_t size)
+int	convert_hundreds(char *s, t_entry *entries, ssize_t n_entries)
 {
 	char	*c;
 	char	*last_two;
@@ -56,23 +57,23 @@ int	convert_hundreds(char *s, t_entry *entries, ssize_t size)
 		free(c);
 		return (0);
 	}
-	if (s[0] != '0' && print_hundred_word(s, c, entries, size) == -1)
+	if (s[0] != '0' && print_hundred_word(s, c, entries, n_entries) == -1)
 		return (-1);
 	free(c);
 	last_two = make_word(s[1], s[2], 2);
-	convert_tens(last_two, entries, size);
+	convert_tens(last_two, entries, n_entries);
 	free(last_two);
 	return (0);
 }
 
-int	magic(char *number, t_entry *entries, ssize_t size)
+int	magic(char *number, t_entry *entries, ssize_t n_entries)
 {
 	char	*triplet;
 	int		len;
 	int		triplet_nz;
 
 	len = ft_strlen(number);
-	if (len > 39)
+	if (len > ft_strlen(entries[n_entries - 1].key) + 2)
 	{
 		ft_putstr(ERROR);
 		return (-1);
@@ -81,10 +82,10 @@ int	magic(char *number, t_entry *entries, ssize_t size)
 	triplet_nz = (triplet[0] != '0'
 			|| triplet[1] != '0' || triplet[2] != '0');
 	if (triplet_nz)
-		convert_hundreds(triplet, entries, size);
+		convert_hundreds(triplet, entries, n_entries);
 	free(triplet);
 	if (len > 3)
-		convert_remaining(number, triplet_nz, entries, size);
+		convert_remaining(number, triplet_nz, entries, n_entries);
 	return (0);
 }
 
